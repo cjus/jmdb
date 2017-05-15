@@ -1,0 +1,23 @@
+{
+  "hydra": {
+    "serviceName": "jrstor",
+    "serviceDescription": "JSON / Redis Data Store Service",
+    "serviceIP": "",
+    "servicePort": 4111,
+    "serviceType": "data",
+    "plugins": {
+      "logger": {
+        "logRequests": true,
+        "redact": ["password"],
+        "elasticsearch": {
+          "host": "localhost",
+          "port": 9200,
+          "index": "hydra"
+        }
+      }
+    },
+    "redis": {
+      "url": "redis://localhost:6379/15"
+    }
+  }
+}
