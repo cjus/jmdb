@@ -2,11 +2,11 @@
 
 const Promise = require('bluebird');
 const hydra = require('hydra');
-const uuid = require('uuid');
-const UMFMessage = hydra.getUMFMessageHelper();
+const objectID = require('bson-objectid');
 const Utils = hydra.getUtilsHelper();
 const ServerResponse = hydra.getServerResponseHelper();
 const serverResponse = new ServerResponse;
+const stor = require('./lib/stor');
 
 const url = require('url');
 const querystring = require('querystring');
@@ -29,9 +29,6 @@ class JRStor {
   constructor() {
     this.config = null;
     this.appLogger = null;
-    this.dataStor = {
-      catalogs: {}
-    };
     serverResponse.enableCORS(true);
   }
 
@@ -61,11 +58,6 @@ class JRStor {
     } else if (this.config.debugLogging) {
       this.appLogger[type](message);
     }
-    this.issueLog.push({
-      ts: new Date().toISOString(),
-      type,
-      entry: message
-    });
   }
 
   /**
@@ -101,9 +93,8 @@ class JRStor {
       if (['GET', 'POST', 'PUT', 'DELETE'].includes(method)) {
         this[`_handle${method}`](catalog, urlData, request, response, resolve);
       } else {
-        serverResponse.sendInvalidRequest(response);
+        serverResponse.sendMethodNotImplemented(response);
         resolve();
-        return;
       }
     });
   }
@@ -119,18 +110,16 @@ class JRStor {
   * @return {undefined}
   */
   _handleGET(catalog, urlData, request, response, resolve) {
-    let doc = {};
     let qs = querystring.parse(urlData.query);
+    let doc;
     if (qs._id) {
-      this.dataStor.catalogs[catalog].forEach((document) => {
-        if (document._id === qs._id) {
-          doc = document;
-        }
-      });
+      doc = stor.findRecordByID(catalog, qs._id);
+    } else if (qs.q) {
+      doc = stor.queryCatalog(catalog, qs.q);
     } else {
-      doc = this.dataStor.catalogs[catalog];
+      doc = stor.getCatalog(catalog);
     }
-    serverResponse.sendResponse(ServerResponse.HTTP_OK, response, {
+    serverResponse.sendOk(response, {
       result: doc
     });
     resolve();
@@ -154,22 +143,17 @@ class JRStor {
     request.on('end', () => {
       let doc = Utils.safeJSONParse(body);
       if (doc) {
-        doc._id = uuid.v4();
-        if (!this.dataStor.catalogs[catalog]) {
-          this.dataStor.catalogs[catalog] = [];
-        }
-        this.dataStor.catalogs[catalog].push(doc);
-        serverResponse.sendResponse(ServerResponse.HTTP_OK, response, {
+        doc._id = objectID();
+        stor.insertRecord(catalog, doc);
+        serverResponse.sendCreated(response, {
           result: {
             _id: doc._id
           }
         });
       } else {
         serverResponse.sendInvalidRequest(response, {
-          reason: 'missing document body'
+          reason: 'Missing document body'
         });
-        resolve();
-        return;
       }
       resolve();
     });
@@ -191,10 +175,27 @@ class JRStor {
       body += data;
     });
     request.on('end', () => {
-      serverResponse.sendResponse(ServerResponse.HTTP_OK, response, {
-        result: {
+      let doc = Utils.safeJSONParse(body);
+      if (doc) {
+        if (!doc._id) {
+          serverResponse.sendInvalidRequest(response, {
+            reason: 'Missing document _id'
+          });
+        } else {
+          let fullDoc = stor.findRecordByID(catalog, doc._id);
+          if (!fullDoc) {
+            serverResponse.sendNotFound(response);
+          } else {
+            let newDoc = Object.assign(fullDoc, doc);
+            stor.updateRecord(catalog, newDoc);
+            serverResponse.sendOk(response);
+          }
         }
-      });
+      } else {
+        serverResponse.sendInvalidRequest(response, {
+          reason: 'Invalid JSON data?'
+        });
+      }
       resolve();
     });
   }
@@ -212,21 +213,19 @@ class JRStor {
   _handleDELETE(catalog, urlData, request, response, resolve) {
     let qs = querystring.parse(urlData.query);
     if (qs._id) {
-      let idx = -1;
-      let i = -1;
-      this.dataStor.catalogs[catalog].forEach((document) => {
-        idx++;
-        if (document._id === qs._id) {
-          i = idx;
-        }
-      });
-      if (i !== -1) {
-        this.dataStor.catalogs[catalog].splice(i, 1);
+      if (!stor.findRecordByID(catalog, qs._id)) {
+        serverResponse.sendNotFound(response);
+        resolve();
+        return;
       }
+      stor.deleteRecord(catalog, qs._id);
     } else {
-      delete this.dataStor.catalogs[catalog];
+      // safty precaution to avoid deleting the catalog if caller used `id` then they meant `_id`
+      if (this._isObjectEmpty(qs)) {
+        stor.deleteCatalog(catalog);
+      }
     }
-    serverResponse.sendResponse(ServerResponse.HTTP_OK, response);
+    serverResponse.sendOk(response);
     resolve();
   }
 
@@ -247,6 +246,32 @@ class JRStor {
       'Content-Type': 'application/json'
     });
     response.end();
+  }
+
+  /**
+  * @name _isObjectEmpty
+  * @summary Determine if object is empty
+  * @param {object} obj = object
+  * @return {boolean} true / false
+  */
+  _isObjectEmpty(obj) {
+    let hasOwnProperty = Object.prototype.hasOwnProperty;
+    if (obj == null) {
+      return true;
+    } else if (obj.length > 0) {
+      return false;
+    } else if (obj.length === 0) {
+      return true;
+    } else if (typeof obj !== 'object') {
+      return true;
+    } else {
+      for (let key in obj) {
+        if (hasOwnProperty.call(obj, key)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
 }
