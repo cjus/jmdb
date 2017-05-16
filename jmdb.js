@@ -1,4 +1,4 @@
-JMDB'use strict';
+'use strict';
 
 const Promise = require('bluebird');
 const hydra = require('hydra');
