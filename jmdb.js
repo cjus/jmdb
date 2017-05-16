@@ -1,8 +1,6 @@
 'use strict';
 
-const Promise = require('bluebird');
 const hydra = require('hydra');
-const objectID = require('bson-objectid');
 const Utils = hydra.getUtilsHelper();
 const ServerResponse = hydra.getServerResponseHelper();
 const serverResponse = new ServerResponse;
@@ -16,6 +14,7 @@ const version = require('./package.json').version;
 const INFO = 'info';
 const ERROR = 'error';
 const FATAL = 'fatal';
+const SAVE_INTERVAL = 2000; // save every two seconds
 
 /**
 * @name JMDB
@@ -41,8 +40,14 @@ class JMDB {
   */
   init(config, appLogger) {
     this.config = config;
-    this.serviceName = hydra.getServiceName();
+    if (this.config.hydra) {
+      this.serviceName = hydra.getServiceName();
+    }
     this.appLogger = appLogger;
+
+    setInterval(() => {
+      stor.save();
+    }, SAVE_INTERVAL);
   }
 
   /**
@@ -155,11 +160,10 @@ class JMDB {
     request.on('end', () => {
       let doc = Utils.safeJSONParse(body);
       if (doc) {
-        doc._id = objectID();
-        stor.insertRecord(catalog, doc);
+        let newDocID = stor.insertRecord(catalog, doc);
         serverResponse.sendCreated(response, {
           result: {
-            _id: doc._id
+            _id: newDocID
           }
         });
       } else {

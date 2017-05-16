@@ -1,5 +1,6 @@
 {
-  "hydra": {
+  "servicePort": 4111,
+  "xxxhydra": {
     "serviceName": "jmdb",
     "serviceDescription": "JSON Memory Database",
     "serviceIP": "",
