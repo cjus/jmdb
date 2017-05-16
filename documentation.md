@@ -1,5 +1,5 @@
 # JMdb Documentation
-A JSON Memory Database with an RESTFul API.
+A JSON Memory Database with a RESTful API.
 
 ## Introduction
 
@@ -43,7 +43,7 @@ DELETE | Used to *remove* a document or document branch
 
 You can connect with JMdb using your web browser. HTTP GET operations can be issued from the browser search field and other HTTP operations can be performed using your browsers devtools.  
 
-You can also use the free [Postman application](https://www.getpostman.com/) 
+You can also use the free [Postman application](https://www.getpostman.com/)
 
 ![](./images/Postman.jpg)
 
@@ -55,7 +55,7 @@ We can use the HTTP POST method to add a new document.
 
 JMdb exposes endpoints with `/v1/jmdb/` prefix. This signifies that we're accessing the version 1 API for jmdb. The prefix appended with the name of the collection we're interested in working with. It's ok if the collection doesn't currently exists - it will be created if necessary.  The body of our POST call will contain a JSON document.  The document must be an object with one or more fields inside.
 
-```javascript
+```shell
 ## Add user Jim
 curl -X "POST" "http://localhost:4111/v1/jmdb/users" \
      -H "content-type: application/json" \
@@ -84,7 +84,7 @@ The return value will be:
 
 Note that the statusCode returned is 201 or HTTP 201 Created. This indicates success. The result will container an _id field which represents the document ID. You'll need to provide the document ID when performing update or delete operations on container documents. Don't worry about having to keep track of those document IDs - you get back document ID for every document created or returned from a query.
 
-### Updating documents 
+### Updating documents
 
 To update a document we'll use the HTTP PUT method.  Note that we're providing a partial document which will be embedded in the document specified by the document ID (`_id`). Notice that the document ID matches the value we received when we create (stored) the original document.
 
