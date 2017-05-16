@@ -4,7 +4,6 @@
   "description": "JSON Memory Database",
   "main": "index.js",
   "author": "Carlos Justiniano <carlos.justiniano@gmail.com> (http://cjus.me/)",
-  "private": true,
   "scripts": {
     "start": "node index.js",
     "debug": "node --inspect --debug-brk index.js",
