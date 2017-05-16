@@ -16,7 +16,7 @@ let routeList = [
 
 const http = require('http');
 const hydra = require('hydra');
-const jrstor = require('./jrstor');
+const jmdb = require('./jmdb');
 
 const HydraLogger = require('fwsp-logger').HydraLogger;
 let hydraLogger = new HydraLogger();
@@ -34,7 +34,7 @@ hydra.init(`${__dirname}/config/config.json`, false)
     return hydra.registerService();
   })
   .then((serviceInfo) => {
-    let logEntry = `Starting JRStor service ${serviceInfo.serviceName}:${hydra.getInstanceVersion()} on ${serviceInfo.serviceIP}:${serviceInfo.servicePort}`;
+    let logEntry = `Starting jmdb service ${serviceInfo.serviceName}:${hydra.getInstanceVersion()} on ${serviceInfo.serviceIP}:${serviceInfo.servicePort}`;
     console.log(logEntry);
     hydra.sendToHealthLog('info', logEntry);
 
@@ -79,7 +79,7 @@ hydra.init(`${__dirname}/config/config.json`, false)
     * @param {object} response - Node HTTP response object
     */
     let server = http.createServer((request, response) => {
-      jrstor.routeRequest(request, response);
+      jmdb.routeRequest(request, response);
     });
     server.listen(serviceInfo.servicePort);
     let updatedRouteList = [];
@@ -89,7 +89,7 @@ hydra.init(`${__dirname}/config/config.json`, false)
     return hydra.registerRoutes(updatedRouteList);
   })
   .then(() => {
-    jrstor.init(config, appLogger);
+    jmdb.init(config, appLogger);
     return null; // to silence promise warning: http://goo.gl/rRqMUw
   })
   .catch((err) => {

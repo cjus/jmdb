@@ -1,7 +1,7 @@
 {
-  "name": "jrstor",
+  "name": "jmdb",
   "version": "0.0.1",
-  "description": "JSON / Redis Data Store Service",
+  "description": "JSON Memory Database",
   "main": "index.js",
   "author": "Carlos Justiniano <carlos.justiniano@gmail.com> (http://cjus.me/)",
   "private": true,
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cjus/jrstor.git"
+    "url": "git+https://github.com/cjus/jmdb.git"
   },
   "keywords": [
     "JSON",
@@ -25,9 +25,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/cjus/jrstor/issues"
+    "url": "https://github.com/cjus/jmdb/issues"
   },
-  "homepage": "https://github.com/cjus/jrstor#readme",
+  "homepage": "https://github.com/cjus/jmdb#readme",
   "dependencies": {
     "bluebird": "3.5.0",
     "bson-objectid": "1.1.5",

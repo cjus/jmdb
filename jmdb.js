@@ -1,4 +1,4 @@
-'use strict';
+JMDB'use strict';
 
 const Promise = require('bluebird');
 const hydra = require('hydra');
@@ -18,10 +18,10 @@ const ERROR = 'error';
 const FATAL = 'fatal';
 
 /**
-* @name JRStor
-* @description JSON Redis Store
+* @name JMDB
+* @description JSON Memeory Database
 */
-class JRStor {
+class JMDB {
   /**
   * @name constructor
   * @return {undefined}
@@ -276,4 +276,4 @@ class JRStor {
 
 }
 
-module.exports = new JRStor();
+module.exports = new JMDB();

@@ -1,7 +1,7 @@
 {
   "hydra": {
-    "serviceName": "jrstor",
-    "serviceDescription": "JSON / Redis Data Store Service",
+    "serviceName": "jmdb",
+    "serviceDescription": "JSON Memory Database",
     "serviceIP": "",
     "servicePort": 4111,
     "serviceType": "data",
