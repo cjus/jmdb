@@ -1,5 +1,5 @@
-# jrstor
-JSON / Redis Data Store Service
+# JMDB
+JSON Memory Database
 
 
 ```
