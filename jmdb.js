@@ -110,12 +110,24 @@ class JMDB {
   * @return {undefined}
   */
   _handleGET(catalog, urlData, request, response, resolve) {
-    let qs = querystring.parse(urlData.query);
-    let doc;
-    if (qs._id) {
-      doc = stor.findRecordByID(catalog, qs._id);
-    } else if (qs.q) {
-      doc = stor.queryCatalog(catalog, qs.q);
+    let id = null;
+    let query = null;
+    let s = urlData.query;
+    if (s) {
+      if (s.startsWith('_id=')) {
+        s = s.replace('_id=', '');
+        id = querystring.unescape(s);
+      }
+      if (s.startsWith('q=')) {
+        s = s.replace('q=', '');
+        query = querystring.unescape(s);
+      }
+    }
+    let doc = {};
+    if (id) {
+      doc = stor.findRecordByID(catalog, id);
+    } else if (query) {
+      doc = stor.queryCatalog(catalog, query);
     } else {
       doc = stor.getCatalog(catalog);
     }
