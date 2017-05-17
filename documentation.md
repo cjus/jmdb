@@ -1,5 +1,5 @@
 ![](./images/logo.png)
-##A JSON Memory Database with a RESTFul API
+## A JSON Memory Database with a RESTFul API
 
 ## Introduction
 
