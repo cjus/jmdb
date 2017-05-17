@@ -7,7 +7,7 @@ JMdb is a JSON [datastore](https://en.wikipedia.org/wiki/Data_store) microservic
 
 You can think of JMdb as an interface to a database with an HTTP front-end. This approach was popularize by CouchDB in early 2005 and is still in use today in [Apache CouchDB](http://couchdb.apache.org/) and the commercial [CouchBase](http://www.couchbase.com) products.
 
-The end result is that database operations become familiar HTTP requests and working with JSON retains its native feel. Gone are database adapters and database programming.
+The result is that database operations become familiar HTTP requests and working with JSON retains its native feel. Gone are database adapters and database programming.
 
 This abstraction allows services to focus on core functionality without the additional and often unnecessary burdens involved. As such, JMdb is intended to help speed the development of services which require a database to store information.
 
@@ -23,8 +23,7 @@ Here are just some of the downsides:
 
 ## Data storage model
 
-The JMdb store consists of a single database which is organized into categories called `collections`.
-A collection is really a named category such as `users`, `purchases`, `friends` etc... Each container consists of JSON data called documents. So a `users` collection might have hundreds of JSON documents. A document consists of JSON fields and values. In this regard, JMdb is inspired by the NoSQL MongoDB.
+The JMdb store consists of a single database which is organized into categories called `collections`. A collection is really a named category such as `users`, `purchases`, `friends` etc... Each container consists of JSON data called documents. So a `users` collection might have hundreds of JSON documents. A document consists of JSON fields and values. In this regard, JMdb is inspired by [MongoDB](https://www.mongodb.com/).
 
 Collections are stored as `.json` text files with arrays of documents.
 
