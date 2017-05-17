@@ -1,5 +1,5 @@
-# JMdb Documentation
-A JSON Memory Database with a RESTful API.
+![](./images/logo.png)
+##A JSON Memory Database with a RESTFul API
 
 ## Introduction
 
