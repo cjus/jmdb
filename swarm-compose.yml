@@ -1,0 +1,92 @@
+version: "3.4"
+
+networks:
+  servicenet:
+    driver: overlay
+    ipam:
+      config:
+        -
+          subnet: 10.0.9.0/24
+
+services:
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    networks:
+      - servicenet
+    ports:
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: ingress
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      replicas: 1
+
+  redis:
+    image: redis:3.0.7
+    networks:
+      - servicenet
+    volumes:
+      - "~/data:/data"
+    ports:
+      - target: 6379
+        published: 6379
+        protocol: tcp
+        mode: ingress
+    deploy:
+      replicas: 1
+
+  elasticsearch:
+    image: elasticsearch:2
+    networks:
+      - servicenet
+    ports:
+      - target: 9200
+        published: 9200
+        protocol: tcp
+        mode: ingress
+      - target: 9300
+        published: 9300
+        protocol: tcp
+        mode: ingress
+    volumes:
+      - "~/data:/usr/share/elasticsearch/data"
+    deploy:
+      replicas: 1
+
+  kibana:
+    image: kibana:4
+    networks:
+      - servicenet
+    ports:
+      - target: 5601
+        published: 5601
+        protocol: tcp
+        mode: ingress
+    depends_on:
+      - elasticsearch
+    deploy:
+      replicas: 1
+
+  hydra-router:
+    image: flywheelsports/hydra-router:1.5.11
+    networks:
+      - servicenet
+    environment:
+      - HYDRA_REDIS_URL=redis://redis:6379/15
+      - HYDRA_SERVICE=hydra-router:1.5.11
+    ports:
+      - target: 80
+        published: 80
+        protocol: tcp
+        mode: ingress
+    depends_on:
+      - redis
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 3
