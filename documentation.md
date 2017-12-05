@@ -40,7 +40,7 @@ DELETE | Used to *remove* a document or document branch
 
 ### Connecting with JMdb
 
-You can connect with JMdb using your web browser. HTTP GET operations can be issued from the browser search field and other HTTP operations can be performed using your browsers devtools.  
+You can connect with JMdb using your web browser. HTTP GET operations can be issued from the browser search field and other HTTP operations can be performed using your browsers devtools.
 
 You can also use the free [Postman application](https://www.getpostman.com/)
 
@@ -81,7 +81,7 @@ The return value will be:
 }
 ```
 
-Note that the statusCode returned is 201 or HTTP 201 Created. This indicates success. The result will container an _id field which represents the document ID. You'll need to provide the document ID when performing update or delete operations on container documents. Don't worry about having to keep track of those document IDs - you get back document ID for every document created or returned from a query.
+Note that the statusCode returned is 201 or HTTP 201 Created. This indicates success. The result will contain an _id field which represents the document ID. You'll need to provide the document ID when performing update or delete operations on container documents. Don't worry about having to keep track of those document IDs - you get back document ID for every document created or returned from a query.
 
 ### Updating documents
 
