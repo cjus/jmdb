@@ -14,7 +14,8 @@ const version = require('./package.json').version;
 const INFO = 'info';
 const ERROR = 'error';
 const FATAL = 'fatal';
-const SAVE_INTERVAL = 2000; // save every two seconds
+
+const GC_INTERVAL = 60000; // every one minute
 
 /**
 * @name JMDB
@@ -29,6 +30,14 @@ class JMDB {
     this.config = null;
     this.appLogger = null;
     serverResponse.enableCORS(true);
+
+    // control node V8 garbage collection
+    // In the future use metrics tracking to determine a more intelligent and dynamic interval.
+    if (global.gc) {
+      setInterval(() => {
+        global.gc();
+      }, GC_INTERVAL);
+    }
   }
 
   /*
@@ -45,9 +54,11 @@ class JMDB {
     }
     this.appLogger = appLogger;
 
-    setInterval(() => {
-      stor.save();
-    }, SAVE_INTERVAL);
+    if (config.periodicSave === true) {
+      setInterval(() => {
+        stor.save();
+      }, config.saveInterval);
+    }
   }
 
   /**
@@ -115,6 +126,13 @@ class JMDB {
   * @return {undefined}
   */
   _handleGET(catalog, urlData, request, response, resolve) {
+    if (urlData.pathname === '/v1/jmdb/health') {
+      serverResponse.sendOk(response, {
+        result: hydra.getHealth()
+      });
+      resolve();
+      return;
+    }
     let id = null;
     let query = null;
     let s = urlData.query;
@@ -136,9 +154,16 @@ class JMDB {
     } else {
       doc = stor.getCatalog(catalog);
     }
-    serverResponse.sendOk(response, {
-      result: doc
-    });
+
+    if (!doc) {
+      serverResponse.sendNotFound(response, {
+        reason: `Catalog ${catalog} not found`
+      });
+    } else {
+      serverResponse.sendOk(response, {
+        result: doc
+      });
+    }
     resolve();
   }
 

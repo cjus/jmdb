@@ -1,6 +1,7 @@
 {
-  "servicePort": 4111,
-  "xxxhydra": {
+  "periodicSave": true,
+  "saveInterval": 2000,
+  "hydra": {
     "serviceName": "jmdb",
     "serviceDescription": "JSON Memory Database",
     "serviceIP": "",

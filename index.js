@@ -80,6 +80,12 @@ if (config.hydra) {
       console.log(logEntry);
       hydra.sendToHealthLog('info', logEntry);
 
+      if (global.gc) {
+        global.gc();
+      } else {
+        console.warn('No GC hook! Start jmdb using `node --expose-gc index.js`.');
+      }
+
       appLogger = hydraLogger.getLogger();
       appLogger.info({
         msg: logEntry
@@ -108,7 +114,8 @@ if (config.hydra) {
       return null; // to silence promise warning: http://goo.gl/rRqMUw
     })
     .catch((err) => {
-      console.log(err);
-      process.exit(-1);
+      let stack = err.stack;
+      console.log(stack); // console log because appLogger isn't available in this case.
+      process.emit('cleanup');
     });
 }
