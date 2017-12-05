@@ -47,7 +47,7 @@ process.on('uncaughtException', (err) => {
 
 const http = require('http');
 const hydra = require('hydra');
-const jmdb = require('./jmdb');
+const jmdb = require('./lib/jmdb');
 let config = require('./config/config.json');
 
 if (!config.hydra) {
