@@ -14,6 +14,37 @@ let routeList = [
   '[delete]/v1/{serviceName}/*rest',
 ];
 
+let appLogger;
+
+process.on('cleanup', () => {
+  hydra.shutdown()
+    .then(() => {
+      process.exit(-1);
+    });
+});
+process.on('SIGTERM', () => {
+  appLogger && appLogger.fatal('Received SIGTERM');
+  process.emit('cleanup');
+});
+process.on('SIGINT', () => {
+  appLogger && appLogger.fatal('Received SIGINT');
+  process.emit('cleanup');
+});
+process.on('unhandledRejection', (reason, _p) => {
+  appLogger && appLogger.fatal(reason);
+  process.emit('cleanup');
+});
+process.on('uncaughtException', (err) => {
+  let stack = err.stack;
+  delete err.__cached_trace__;
+  delete err.__previous__;
+  delete err.domain;
+  appLogger && appLogger.fatal({
+    stack
+  });
+  process.emit('cleanup');
+});
+
 const http = require('http');
 const hydra = require('hydra');
 const jmdb = require('./jmdb');
@@ -38,7 +69,6 @@ if (config.hydra) {
   const HydraLogger = require('fwsp-logger').HydraLogger;
   let hydraLogger = new HydraLogger();
   hydra.use(hydraLogger);
-  let appLogger;
 
   hydra.init(`${__dirname}/config/config.json`, false)
     .then((newConfig) => {
@@ -56,33 +86,6 @@ if (config.hydra) {
       });
 
       hydra.on('log', (_entry) => {
-      });
-
-      process.on('cleanup', () => {
-        hydra.shutdown();
-        process.exit(0);
-      });
-      process.on('SIGTERM', () => {
-        appLogger.fatal('Received SIGTERM');
-        process.emit('cleanup');
-      });
-      process.on('SIGINT', () => {
-        appLogger.fatal('Received SIGINT');
-        process.emit('cleanup');
-      });
-      process.on('unhandledRejection', (reason, _p) => {
-        appLogger.fatal(reason);
-        process.emit('cleanup');
-      });
-      process.on('uncaughtException', (err) => {
-        let stack = err.stack;
-        delete err.__cached_trace__;
-        delete err.__previous__;
-        delete err.domain;
-        appLogger.fatal({
-          stack
-        });
-        process.emit('cleanup');
       });
 
       /**
