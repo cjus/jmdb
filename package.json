@@ -5,7 +5,7 @@
   "main": "index.js",
   "author": "Carlos Justiniano <carlos.justiniano@gmail.com> (http://cjus.me/)",
   "scripts": {
-    "start": "node index.js",
+    "start": "NODE_ENV=production node index.js",
     "debug": "node --inspect --debug-brk index.js",
     "test": "mocha specs --reporter spec"
   },

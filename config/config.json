@@ -1,5 +1,5 @@
 {
-  "periodicSave": true,
+  "periodicSave": false,
   "saveInterval": 2000,
   "hydra": {
     "serviceName": "jmdb",
