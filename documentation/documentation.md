@@ -79,7 +79,7 @@ The remainder of this document will use the command-line `curl` utility.
 
 ### Adding documents
 
-We can use the HTTP POST method to add a new document.
+We can use the HTTP POST method to add a new 	document.
 
 JMdb exposes endpoints with `/v1/jmdb/` prefix. This signifies that we're accessing the version 1 API for JMdb. The prefix is then appended with the name of the collection we're interested in working with. It's ok if the collection doesn't currently exist - it will be created if necessary.  The body of our POST call will contain a JSON document.  The document must be an object with one or more fields inside.
 
