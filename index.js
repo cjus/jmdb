@@ -51,17 +51,16 @@ process.on('uncaughtException', (err) => {
 let main = async () => {
   try
   {
+    console.log("     | |  \\/  | __| | |__  ");
+    console.log("  _  | | |\\/| |/ _` | '_ \\ ");
+    console.log(" | |_| | |  | | (_| | |_) |");
+    console.log("  \\___/|_|  |_|\\__,_|_.__/");
+
     const HydraLogger = require('fwsp-logger').HydraLogger;
     let hydraLogger = new HydraLogger();
     hydra.use(hydraLogger);
 
     let newConfig = await hydra.init(`${__dirname}/config/config.json`, false);
-
-    appLogger = hydraLogger.getLogger();
-    appLogger.info({
-      msg: logEntry
-    });
-
     let serviceInfo = await hydra.registerService();
 
     // let newConfig = hydraExpress.getRuntimeConfig();
@@ -69,6 +68,11 @@ let main = async () => {
     let logEntry = `Starting jmdb service ${serviceInfo.serviceName}:${hydra.getInstanceVersion()} on ${serviceInfo.serviceIP}:${serviceInfo.servicePort}`;
     console.log(logEntry);
     hydra.sendToHealthLog('info', logEntry);
+
+    appLogger = hydraLogger.getLogger();
+    appLogger.info({
+      msg: logEntry
+    });
 
     if (global.gc) {
       global.gc();
